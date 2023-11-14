@@ -16,8 +16,8 @@ io.on('connection', async (socket) => {
     console.log(`A user has connected! Their ID is ${socket.id}`);
 
     // context: the python script just turned on, and needs to create an offer with all
-    socket.on('openCVoffer', () => {
-
+    socket.on('openCVoffer', (data, socket) => {
+        console.log(data);
     });
 
 
