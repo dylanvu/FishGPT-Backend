@@ -1,24 +1,33 @@
 import express from "express";
 import http from "http";
 import socketio, { Server } from 'socket.io';
-// import mediasoup from "mediasoup";
+import cors from "cors";
 
 // express app
 const app = express();
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 const port = 5000;
 
 // server for socket.io
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: "*"
+    }
+});
 
-let pythonSocketId = null;
+let pythonSocketId: null | string = null;
 
 // socket.io stuff
-io.on('connection', async (socket) => {
+io.on('connection', async (socket: socketio.Socket) => {
     console.log(`A user has connected! Their ID is ${socket.id}`);
 
     // context: the python script has just connected and this backend needs to remember that this is the main python client
-    socket.on("pythonOffer", (_) => {
+    socket.on("pythonConnect", (_) => {
         // save the pythonSocketId
         console.log(`python client has connected, this is the id: ${socket.id}`);
         pythonSocketId = socket.id;
@@ -30,8 +39,12 @@ io.on('connection', async (socket) => {
     });
 
 
-    // context: a new client has created an offer and requested to connect to the python client
+    // context: a new client has just connected and created an offer and requested to connect to the python client
     socket.on('clientOffer', (data) => {
+        console.log(`incoming sdp from js client`, data);
+        if (pythonSocketId) {
+            io.to(pythonSocketId).emit('incoming_sdp', data);
+        }
         // forward the offer to the client
     });
 
