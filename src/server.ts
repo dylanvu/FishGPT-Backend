@@ -33,19 +33,27 @@ io.on('connection', async (socket: socketio.Socket) => {
         pythonSocketId = socket.id;
     });
 
+    socket.on("pythonDisconnect", (_) => {
+        console.log("python client has disconnected")
+        pythonSocketId = null;
+    });
+
     // context: the python script needs to create an offer with all
     socket.on('pythonOffer', (data) => {
-        console.log(data);
+        // console.log(data);
     });
 
 
     // context: a new client has just connected and created an offer and requested to connect to the python client
     socket.on('clientOffer', (data) => {
-        console.log(`incoming sdp from js client`, data);
-        if (pythonSocketId) {
-            io.to(pythonSocketId).emit('incoming_sdp', data);
-        }
+        console.log(`incoming sdp from js client`);
         // forward the offer to the client
+        if (pythonSocketId) {
+            console.log(`Sending sdp data to python client ${pythonSocketId}`);
+            io.to(pythonSocketId).emit('incoming_sdp', data);
+        } else {
+            console.log("python socket id is not found")
+        }
     });
 
 
