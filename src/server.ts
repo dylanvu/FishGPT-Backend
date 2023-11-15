@@ -26,36 +26,12 @@ let pythonSocketId: null | string = null;
 io.on('connection', async (socket: socketio.Socket) => {
     console.log(`A user has connected! Their ID is ${socket.id}`);
 
-    // context: the python script has just connected and this backend needs to remember that this is the main python client
-    socket.on("pythonConnect", (_) => {
-        // save the pythonSocketId
-        console.log(`python client has connected, this is the id: ${socket.id}`);
-        pythonSocketId = socket.id;
-    });
-
-    socket.on("pythonDisconnect", (_) => {
-        console.log("python client has disconnected")
-        pythonSocketId = null;
-    });
-
-    // context: the python script needs to create an offer with all
-    socket.on('pythonOffer', (data) => {
-        // console.log(data);
-    });
-
-
-    // context: a new client has just connected and created an offer and requested to connect to the python client
-    socket.on('clientOffer', (data) => {
-        console.log(`incoming sdp from js client`);
-        // forward the offer to the client
-        if (pythonSocketId) {
-            console.log(`Sending sdp data to python client ${pythonSocketId}`);
-            io.to(pythonSocketId).emit('incoming_sdp', data);
-        } else {
-            console.log("python socket id is not found")
-        }
-    });
-
+    // the python client has sent images
+    socket.on('imageSend', (image) => {
+        console.log(image["data"]);
+        // send image buffer to all clients except the sender
+        socket.broadcast.emit("imageReceive", image);
+    })
 
 });
 
