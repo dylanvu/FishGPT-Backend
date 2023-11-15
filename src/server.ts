@@ -33,6 +33,12 @@ io.on('connection', async (socket: socketio.Socket) => {
         socket.broadcast.emit("imageReceive", image);
     })
 
+    // the python client has sent coordinates
+    socket.on('coordsSend', (coords) => {
+        console.log(coords["data"]);
+        socket.broadcast.emit('coordsReceive', coords);
+    })
+
 });
 
 // routes
