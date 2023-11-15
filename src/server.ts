@@ -30,13 +30,13 @@ io.on('connection', async (socket: socketio.Socket) => {
     socket.on('imageSend', (image) => {
         console.log(image["data"]);
         // send image buffer to all clients except the sender
-        socket.broadcast.emit("imageReceive", image);
+        io.emit("imageReceive", image);
     })
 
     // the python client has sent coordinates
     socket.on('coordsSend', (coords) => {
         console.log(coords["data"]);
-        socket.broadcast.emit('coordsReceive', coords);
+        io.emit('coordsReceive', coords);
     })
 
 });
