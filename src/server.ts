@@ -9,7 +9,7 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-const port = 5000;
+const port = 3000;
 
 // server for socket.io
 const server = http.createServer(app);
@@ -27,7 +27,7 @@ io.on('connection', async (socket: socketio.Socket) => {
 
     // the python client has sent images
     socket.on('imageSend', (image) => {
-        console.log(image["data"]);
+        // console.log(image["data"]);
         // send image buffer to all clients except the sender
         io.emit("imageReceive", image);
     })
