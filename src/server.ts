@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import socketio, { Server } from 'socket.io';
 
-let viewCount = -2;
+let viewCount = -1;
 
 // express app
 const app = express();
